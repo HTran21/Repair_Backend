@@ -10,10 +10,11 @@ class LoginController {
         pool.getConnection((err, connection) => {
             if (err) throw err;
 
-            connection.query('SELECT MSSV FROM users WHERE MSSV = ? AND password = ?', [MSSV, password], (err, rows, fields) => {
+            connection.query('SELECT * FROM users WHERE MSSV = ? AND password = ?', [MSSV, password], (err, rows, fields) => {
                 if (!err) {
                     if (rows.length) {
-                        res.send({ message: "Đăng nhập thành công" });
+                        res.send({ message: "Đăng nhập thành công", values: rows[0].role });
+                        console.log(rows[0].MSSV)
                     }
                     else {
                         res.send({ error: "Đăng nhập thất bại" });
