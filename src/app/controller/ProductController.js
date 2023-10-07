@@ -19,6 +19,7 @@ class ProductController {
 
     addProduct(req, res) {
 
+
         const upload = multer({ storage: storage }).single("file");
 
         upload(req, res, function (err) {
@@ -33,6 +34,7 @@ class ProductController {
                 const statusItem = 'active';
                 const { nameItem, sizeItem, colorItem, chatlieu, desItem } = req.body;
 
+
                 pool.getConnection((err, connection) => {
                     if (err) throw err
 
@@ -46,6 +48,7 @@ class ProductController {
                                     [nameItem, url, sizeItem, colorItem, chatlieu, desItem, statusItem], (err, rows) => {
                                         if (!err) {
                                             res.send({ message: 'Thêm sản phẩm thành công' });
+
                                         }
                                         else {
                                             console.log(err);
@@ -73,9 +76,57 @@ class ProductController {
     }
 
     updateProduct(req, res) {
-        const { file, nameItem, sizeItem, colorItem, chatlieu, desItem } = req.body;
-        const id = req.params.id;
-        res.json(req.body.nameItem);
+        const upload = multer({ storage: storage }).single("file");
+
+        upload(req, res, function (err) {
+            if (err instanceof multer.MulterError) {
+                res.send(err);
+            }
+            else if (err) {
+                res.send(err);
+            }
+            else {
+
+                if (req.file) {
+                    const url = req.file.originalname;
+                    const { nameItem, sizeItem, colorItem, chatlieu, desItem } = req.body;
+                    const id = req.params.id;
+
+                    pool.getConnection((err, connection) => {
+                        connection.query('UPDATE items SET nameItem  = ?, imageItem = ?, sizeItem = ?, colorItem = ?, chatlieu = ?, desItem = ? WHERE ID_item = ?',
+                            [nameItem, url, sizeItem, colorItem, chatlieu, desItem, id], (err, data) => {
+                                if (!err) {
+                                    res.json({ message: "Cập nhật thông tin thiết bị thành công" })
+                                }
+                                else {
+                                    console.log(err);
+                                    res.json({ error: "Cập nhật dữ liệu thất bại" })
+                                }
+                            })
+                    })
+                }
+                else {
+                    const { nameItem, sizeItem, colorItem, chatlieu, desItem } = req.body;
+                    const id = req.params.id;
+
+                    pool.getConnection((err, connection) => {
+                        connection.query('UPDATE items SET nameItem  = ?, sizeItem = ?, colorItem = ?, chatlieu = ?, desItem = ? WHERE ID_item = ?',
+                            [nameItem, sizeItem, colorItem, chatlieu, desItem, id], (err, data) => {
+                                if (!err) {
+                                    res.json({ message: "Cập nhật thông tin thiết bị thành công" })
+                                }
+                                else {
+                                    console.log(err);
+                                    res.json({ error: "Cập nhật dữ liệu thất bại" })
+                                }
+                            })
+                    })
+                }
+
+
+            }
+        })
+
     }
 }
 
