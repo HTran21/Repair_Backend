@@ -1,4 +1,3 @@
-
 const productRouter = require("./product");
 const userRouter = require("./user");
 const authentication = require("./authentication");
