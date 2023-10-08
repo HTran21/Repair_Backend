@@ -19,7 +19,6 @@ class ProductController {
 
     addProduct(req, res) {
 
-
         const upload = multer({ storage: storage }).single("file");
 
         upload(req, res, function (err) {
@@ -33,8 +32,6 @@ class ProductController {
                 const url = req.file.originalname;
                 const statusItem = 'active';
                 const { nameItem, sizeItem, colorItem, chatlieu, desItem } = req.body;
-
-
                 pool.getConnection((err, connection) => {
                     if (err) throw err
 
@@ -59,6 +56,7 @@ class ProductController {
                     })
 
                 })
+
 
             }
         })
@@ -126,7 +124,22 @@ class ProductController {
 
             }
         })
+    }
 
+    deleteProduct(req, res) {
+        const id = req.body.id;
+        pool.getConnection((err, connection) => {
+            if (err) throw err;
+            connection.query('DELETE FROM items WHERE ID_item = ?', [id], (err, rows) => {
+                if (!err) {
+                    res.json({ message: "Thiết bị đã được xóa" })
+                }
+                else {
+                    console.log(err);
+                    res.json({ error: "Xóa thiết bị không thành công" })
+                }
+            })
+        })
     }
 }
 
