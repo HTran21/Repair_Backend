@@ -20,6 +20,22 @@ class UserConTroller {
             console.log(error);
         }
     }
+    // [GET]
+    listStaff(req, res, next) {
+        try {
+            pool.getConnection((err, connection) => {
+                if (err) throw err;
+                connection.query('SELECT * FROM staffs', (err, data) => {
+                    if (err) return res.json(err);
+                    res.json(data)
+                });
+
+            });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
 
     //[GET] user/:id
     infoUser(req, res, next) {
