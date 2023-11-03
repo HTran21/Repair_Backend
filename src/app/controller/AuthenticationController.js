@@ -74,6 +74,66 @@ class AuthenticationController {
         })
     }
 
+    // [POST}] /Admin add staff
+    addStaff(req, res, next) {
+        const upload = multer({ storage: storage }).single("avatar");
+
+        upload(req, res, function (err) {
+            if (err instanceof multer.MulterError) {
+                res.send(err);
+            }
+            else if (err) {
+                res.send(err);
+            }
+            else {
+
+                const url = req.file.originalname;
+                const { MaNV, username, password, chucvu, email, phone, role } = req.body;
+                var status = 'active';
+
+                const values = req.body;
+
+
+                pool.getConnection((err, connection) => {
+                    if (err) throw err;
+
+
+                    connection.query('SELECT MaNV FROM staffs WHERE MaNV = ? ', [MaNV], (err, rows, fields) => {
+                        // connection.release();
+
+                        if (!err) {
+
+                            if (rows.length) {
+                                // res.send(rows[0].MSSV);
+                                res.send({ values, error: "Tài khoản đã tồn tại" });
+
+                            }
+                            else {
+
+                                let hashPassword = bcrypt.hashSync(password, salt);
+
+                                connection.query('INSERT INTO staffs SET MaNV = ?, hoten = ?, password = ?, chucvu = ?,email = ?, phone = ?, avatar = ?,role = ?, status = ?',
+                                    [MaNV, username, hashPassword, chucvu, email, phone, url, role, status], (err, rows) => {
+                                        if (!err) {
+                                            res.json({ message: "Tạo tài khoản thành công" });
+
+                                        }
+                                        else {
+                                            console.log(err);
+                                        }
+                                    });
+                            }
+                        }
+                        else {
+                            console.log(err);
+                        }
+                    })
+                });
+
+            }
+        })
+    }
+
     // [POST]
     // login(req, res, next) {
     //     try {
