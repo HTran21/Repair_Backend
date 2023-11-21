@@ -5,14 +5,28 @@ const pool = require('../../config/db');
 class ProductController {
 
     showProduct(req, res) {
-        pool.getConnection((err, connection) => {
-            if (err) throw err
 
-            connection.query('SELECT * FROM items', (err, data) => {
-                if (err) return res.json(err);
-                return res.json(data);
+        const search = req.query.search;
+        if (search) {
+            pool.getConnection((err, connection) => {
+                if (err) throw err
+
+                connection.query('SELECT * FROM items WHERE nameItem LIKE ?', [`%${search}%`], (err, data) => {
+                    if (err) return res.json(err);
+                    return res.json(data);
+                })
             })
-        })
+        }
+        else {
+            pool.getConnection((err, connection) => {
+                if (err) throw err
+
+                connection.query('SELECT * FROM items', (err, data) => {
+                    if (err) return res.json(err);
+                    return res.json(data);
+                })
+            })
+        }
     }
 
 
