@@ -5,6 +5,7 @@ const repairController = require('../app/controller/RepairController');
 
 router.post("/", repairController.registerRepair);
 router.get("/unapproved", repairController.listUnapprovied);
+router.get("/dashboard", repairController.dashBoard)
 router.get("/accept", repairController.listAccept);
 router.get("/:id", repairController.listRepair);
 router.post("/:id", repairController.reloadRepair);

@@ -7,8 +7,11 @@ router.get('/staff', userContronller.listStaff);
 router.get('/dashboard', userContronller.dashBoard);
 router.get('/day', userContronller.day);
 router.get('/day/:id', userContronller.phong);
+router.put('/:id', userContronller.updateInfoStaff);
 router.get('/:id', userContronller.infoUser);
+router.get('/staff/:id', userContronller.infoStaff);
 router.delete('/:id', userContronller.deleteStaff);
 router.delete('/user/:id', userContronller.deleteUser);
-router.put('/update/:id', userContronller.updateInfo)
+router.put('/update/:id', userContronller.updateInfo);
+
 module.exports = router;

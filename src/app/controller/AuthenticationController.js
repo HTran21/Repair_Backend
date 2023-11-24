@@ -193,7 +193,6 @@ class AuthenticationController {
                     return res.status(500).json({ error: "Lỗi server" });
                 }
 
-                // Truy vấn users
                 connection.query('SELECT * FROM users WHERE MSSV = ?', [MSSV], async (err, userRows) => {
                     if (err) {
                         console.log(err);
@@ -209,10 +208,8 @@ class AuthenticationController {
                             return res.send({ error: "Sai mật khẩu" });
 
                         }
-                        // Kiểm tra mật khẩu và xử lý đăng nhập ở đây cho bảng users
                         return res.status(200).json({ message: "Đăng nhập thành công", data: userData });
                     } else {
-                        // Nếu không tìm thấy trong bảng users, thực hiện truy vấn cho bảng staff
                         connection.query('SELECT * FROM staffs WHERE MaNV = ?', [MSSV], async (err, staffRows) => {
                             if (err) {
                                 console.log(err);
@@ -228,12 +225,10 @@ class AuthenticationController {
                                     return res.send({ error: "Sai mật khẩu" });
 
                                 }
-                                // Kiểm tra mật khẩu và xử lý đăng nhập ở đây cho bảng staff
                                 return res.status(200).json({ message: "Đăng nhập thành công", data: userData });
                             } else {
-                                // Không tìm thấy trong cả hai bảng
-                                connection.release();
-                                return res.status(401).json({ error: "Tài khoản không tồn tại" });
+                                // connection.release();
+                                return res.json({ error: "Tài khoản không tồn tại" });
                             }
                         });
                     }

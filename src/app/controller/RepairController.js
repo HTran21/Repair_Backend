@@ -228,6 +228,27 @@ class RepairController {
         }
     }
 
+    dashBoard(req, res, next) {
+        try {
+            pool.getConnection((err, connection) => {
+                if (err) throw err;
+                connection.query('SELECT items.nameItem, COUNT(repair.ID_Repair) AS TotalRepairs FROM items LEFT JOIN repair ON items.ID_Item = repair.ID_Item GROUP BY items.ID_Item',
+                    (err, data) => {
+                        if (!err) {
+                            res.send(data);
+                        } else {
+                            console.log(err);
+                            res.json({ error: "Lấy dữ liệu thất bại" })
+                        }
+                    })
+            })
+        }
+        catch (error) {
+            console.log(error);
+        }
+
+    }
+
 
 }
 

@@ -54,6 +54,23 @@ class UserConTroller {
         }
     }
 
+    //[GET] user/:id
+    infoStaff(req, res, next) {
+        const ID_Staff = req.params.id;
+        try {
+            pool.getConnection((err, connection) => {
+                if (err) throw err;
+                connection.query('SELECT * FROM staffs WHERE staffs.ID_Staff = ?', [ID_Staff], (err, data) => {
+                    if (err) return res.json(err);
+                    res.json(data[0]);
+                })
+            })
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+
     //[GET] /day
     day(req, res) {
         try {
@@ -139,6 +156,60 @@ class UserConTroller {
         })
     }
 
+    // [PUT] update/:id
+    updateInfoStaff(req, res, next) {
+        const upload = multer({ storage: storage }).single("avatar");
+
+        upload(req, res, function (err) {
+            if (err instanceof multer.MulterError) {
+                res.send(err);
+            }
+            else if (err) {
+                res.send(err);
+            }
+            else {
+                if (req.file) {
+                    const url = req.file.originalname;
+                    const { MaNV, hoten, email, phone, chucvu, role } = req.body;
+                    const id = req.params.id;
+
+                    pool.getConnection((err, connection) => {
+                        connection.query('UPDATE staffs SET MaNV = ?, hoten = ?, email = ? , phone = ?, avatar = ?, chucvu = ?, role = ? WHERE ID_Staff = ?',
+                            [MaNV, hoten, email, phone, url, chucvu, role, id], (err, data) => {
+                                if (!err) {
+                                    res.json({ message: "Cập nhật thông tin thành công" })
+                                }
+                                else {
+                                    console.log(err);
+                                    res.json({ error: "Cập nhật thông tin thất bại" })
+                                }
+                            })
+                    })
+                }
+                else {
+                    const { MaNV, hoten, email, phone, chucvu, role } = req.body;
+                    const id = req.params.id;
+
+                    pool.getConnection((err, connection) => {
+                        connection.query('UPDATE staffs SET MaNV = ?, hoten = ?, email = ? , phone = ?, chucvu = ?, role = ? WHERE ID_Staff = ?',
+                            [MaNV, hoten, email, phone, chucvu, role, id], (err, data) => {
+                                if (!err) {
+                                    res.json({ message: "Cập nhật thông tin thành công" })
+                                }
+                                else {
+                                    console.log(err);
+                                    res.json({ error: "Cập nhật thông tin thất bại" })
+                                }
+                            })
+                    })
+                }
+
+
+
+            }
+        })
+    }
+
     deleteStaff(req, res) {
 
         try {
@@ -188,26 +259,32 @@ class UserConTroller {
             pool.getConnection((err, connection) => {
                 if (err) throw err;
 
-                // Số lượng người dùng
-                connection.query('SELECT COUNT(*) AS totalUsers FROM users', (err, usersResult) => {
+                connection.query('SELECT COUNT(*) AS totalContacts FROM contacts', (err, contactsResult) => {
                     if (err) throw err;
-
-                    // Số lượng nhân viên
-                    connection.query('SELECT COUNT(*) AS totalStaffs FROM staffs', (err, staffsResult) => {
+                    connection.query('SELECT COUNT(*) AS totalUsers FROM users', (err, usersResult) => {
                         if (err) throw err;
 
-                        // Số lượng đơn sửa chữa với TrangThai = "N"
-                        connection.query('SELECT COUNT(*) AS totalRepairs FROM repair WHERE TrangThai = "N"', (err, repairsResult) => {
+                        connection.query('SELECT COUNT(*) AS totalStaffs FROM staffs', (err, staffsResult) => {
                             if (err) throw err;
 
-                            res.json({
-                                totalUsers: usersResult[0].totalUsers,
-                                totalStaffs: staffsResult[0].totalStaffs,
-                                totalRepairs: repairsResult[0].totalRepairs,
+                            connection.query('SELECT COUNT(*) AS totalRepairs FROM repair WHERE TrangThai = "N"', (err, repairsResult) => {
+                                if (err) throw err;
+
+
+                                res.json({
+                                    totalContacts: contactsResult[0].totalContacts,
+                                    totalUsers: usersResult[0].totalUsers,
+                                    totalStaffs: staffsResult[0].totalStaffs,
+                                    totalRepairs: repairsResult[0].totalRepairs,
+
+                                });
+
                             });
                         });
                     });
                 });
+
+
             });
         } catch (error) {
             console.log(error);
