@@ -7,6 +7,7 @@ router.post("/", repairController.registerRepair);
 router.get("/unapproved", repairController.listUnapprovied);
 router.get("/accept", repairController.listAccept);
 router.get("/:id", repairController.listRepair);
+router.post("/:id", repairController.reloadRepair);
 
 router.get("/info/:id", repairController.infoRepairAccept);
 router.get("/update/:id", repairController.infoRepair);

@@ -1,5 +1,6 @@
 const pool = require('../../config/db');
-
+const nodemailer = require('nodemailer');
+const sendNotificationEmail = require("../../middleware/sendEmail");
 class RepairController {
     registerRepair(req, res) {
         try {
@@ -147,14 +148,13 @@ class RepairController {
             const ID_Repair = req.params.id;
             const TrangThai = "Y";
             const { nhanvien, ngayDuyet } = req.body;
-            console.log("ID_staff", ID_Repair);
-
-            console.log("Data", req.body);
             pool.getConnection((err, connection) => {
                 if (err) throw err;
                 connection.query('UPDATE repair SET ID_Staff = ?, NgayDuyet = ?, TrangThai = ? WHERE ID_Repair = ? ', [nhanvien, ngayDuyet, TrangThai, ID_Repair],
-                    (err, data) => {
+                    async (err, data) => {
                         if (!err) {
+                            // await sendNotificationEmail(ID_Repair);
+
                             res.json({ message: "Duyệt đơn đăng ký thành công" })
                         }
                         else {
@@ -168,7 +168,6 @@ class RepairController {
             console.log(error);
         }
     }
-
 
 
     deleteRepair(req, res) {
@@ -201,6 +200,30 @@ class RepairController {
 
         }
         catch (error) {
+            console.log(error);
+        }
+    }
+
+    reloadRepair(req, res, next) {
+        try {
+            const ID_Repair = req.params.id;
+            const TrangThai = "N";
+            const ngayDK = req.body.dateReload;
+            pool.getConnection((err, connection) => {
+                if (err) throw err;
+                connection.query('UPDATE repair SET NgayDK = ?, TrangThai = ? WHERE ID_Repair = ? ', [ngayDK, TrangThai, ID_Repair],
+                    async (err, data) => {
+                        if (!err) {
+
+                            res.json({ message: "Reload đơn đăng ký thành công" })
+                        }
+                        else {
+                            console.log(err);
+                            res.json({ error: "Reload đơn đăng ký thất bại" })
+                        }
+                    })
+            })
+        } catch (error) {
             console.log(error);
         }
     }
