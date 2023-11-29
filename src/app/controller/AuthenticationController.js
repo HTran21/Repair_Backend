@@ -28,7 +28,7 @@ class AuthenticationController {
                 const url = req.file.originalname;
                 const { MSSV, username, password, email, phone, phong } = req.body;
 
-                var role = 'AD';
+                var role = 'SV';
                 var status = 'active';
 
                 const values = req.body;
